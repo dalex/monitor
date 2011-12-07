@@ -1,0 +1,35 @@
+<html>
+<body>
+<h3>Мониторинг</h3>
+
+<table border="1">
+    <thead>
+    <td>Ресурс</td>
+    <td>Код ответа</td>
+    <td>Время ответа, ms</td>
+    <td>Размре ответа, b</td>
+    <td>Сообщение</td>
+    </thead>
+
+<#list resourceStatuses as resourceStatus>
+    <tr>
+        <td>${resourceStatus.resource.url.path}</td>
+        <#if resourceStatus.statusException>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>
+                ${resourceStatus.statusMessage}
+            </td>
+        <#else>
+                <td>${resourceStatus.responseCode}</td>
+                <td>${resourceStatus.responseTimeOut}</td>
+                <td>${resourceStatus.responseSize}</td>
+                <td></td>
+        </#if>
+    </tr>
+</#list>
+</table>
+
+</body>
+</html>

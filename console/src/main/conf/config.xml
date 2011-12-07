@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<monitor>
+    <httpAccept>
+        <responseCode>200</responseCode>
+        <responseSize>200</responseSize>
+        <responseTimeOut>1000</responseTimeOut>
+    </httpAccept>
+
+    <resources>
+        <resource>
+            <url login="tomcat" password="123">
+                http://localhost:8080/manager/html
+            </url>
+            <email>aav@bigbyzzy.com</email>
+        </resource>
+        <resource>
+            <url>http://google.com</url>
+            <email>aav@bigbyzzy.com</email>
+        </resource>
+        <resource>
+            <url>http://bigbuzzy.ru</url>
+            <email>aav@bigbyzzy.com</email>
+        </resource>
+    </resources>
+
+</monitor>
