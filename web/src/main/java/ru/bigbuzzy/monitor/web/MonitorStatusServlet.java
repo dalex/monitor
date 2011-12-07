@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import ru.bigbuzzy.monitor.model.task.ResourceStatus;
 import ru.bigbuzzy.monitor.service.ResourceStatusService;
 
 import javax.servlet.ServletConfig;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +51,18 @@ public class MonitorStatusServlet extends HttpServlet {
         try {
             Map<String, Object> params = new HashMap<String, Object>();
             logger.trace("Resource statuses size {}", resourceStatusService.getResourceStatuses().size());
-            params.put("resourceStatuses", resourceStatusService.getResourceStatuses());
+
+            Map<String, List<ResourceStatus>> resourceStatusMap = new HashMap<String, List<ResourceStatus>>();
+            for(ResourceStatus resourceStatus : resourceStatusService.getResourceStatuses()) {
+                String urlKey = resourceStatus.getResource().getUrl().getPath();
+                List<ResourceStatus> resourceStatuses = resourceStatusMap.get(urlKey);
+                if(resourceStatuses == null) {
+                    resourceStatuses = new LinkedList<ResourceStatus>();
+                    resourceStatusMap.put(urlKey, resourceStatuses);
+                }
+                resourceStatuses.add(resourceStatus);
+            }
+            params.put("resourceStatusMap", resourceStatusMap);
             response.getWriter().println(FreeMarkerTemplateUtils.processTemplateIntoString(
                     configuration.getTemplate(PAGE_TEMPLATE), params));
             response.setStatus(HttpServletResponse.SC_OK);

@@ -6,8 +6,10 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ import ru.bigbuzzy.monitor.model.config.Url;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,13 +38,14 @@ import java.util.List;
  */
 public class HttpResourceMonitor {
     private static final Logger logger = LoggerFactory.getLogger(HttpResourceMonitor.class);
-
     @Autowired
     private MailService mailService;
     @Autowired
     private ConfigurationService configurationService;
     @Autowired
     private ResourceStatusService resourceStatusService;
+
+    private ThreadSafeClientConnManager clientConnManager = new ThreadSafeClientConnManager();
 
     public void execute() {
         if (logger.isTraceEnabled()) {
@@ -57,9 +61,10 @@ public class HttpResourceMonitor {
 
         for (Resource resource : configurationService.getResources()) {
             ResourceStatus resourceStatus = new ResourceStatus();
+            resourceStatus.setCreateTime(new Date());
             resourceStatus.setResource(resource);
 
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            DefaultHttpClient httpClient = new DefaultHttpClient(clientConnManager);
             try {
                 Accept accept = resource.getAccept();
                 Url url = resource.getUrl();
@@ -117,11 +122,15 @@ public class HttpResourceMonitor {
                 mailService.send(new MailExceptionCommand(resource, e));
                 resourceStatus.setStatusException(true);
                 resourceStatus.setStatusMessage(e.getMessage());
-            } finally {
-                httpClient.getConnectionManager().shutdown();
             }
             resourceStatuses.add(resourceStatus);
         }
         resourceStatusService.save(resourceStatuses);
+    }
+
+    public void destroy() {
+        if(clientConnManager != null) {
+            clientConnManager.shutdown();
+        }
     }
 }

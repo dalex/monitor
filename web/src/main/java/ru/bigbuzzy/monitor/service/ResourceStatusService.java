@@ -3,6 +3,7 @@ package ru.bigbuzzy.monitor.service;
 import org.springframework.stereotype.Service;
 import ru.bigbuzzy.monitor.model.task.ResourceStatus;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,13 +14,18 @@ import java.util.List;
  */
 @Service
 public class ResourceStatusService {
-    private List<ResourceStatus> resourceStatuses;
 
-    public void save(List<ResourceStatus> resourceStatuses) {
-        this.resourceStatuses = resourceStatuses;
+    private List<ResourceStatus> resourceStatuses = new LinkedList<ResourceStatus>();
+
+    public synchronized void save(List<ResourceStatus> resourceStatuses) {
+        this.resourceStatuses.addAll(resourceStatuses);
     }
 
-    public List<ResourceStatus> getResourceStatuses() {
+    public synchronized void delete(List<ResourceStatus> resourceStatuses) {
+        this.resourceStatuses.removeAll(resourceStatuses);
+    }
+
+    public synchronized List<ResourceStatus> getResourceStatuses() {
         return resourceStatuses;
     }
 }

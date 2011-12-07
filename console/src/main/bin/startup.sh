@@ -23,8 +23,10 @@ CLIENT_HOME=`cd "$PRGDIR/.." ; pwd`
 
 CLASSPATH="$CLIENT_HOME/conf:$CLIENT_HOME/lib/*"
 
-if [ ! -z "$1" ] ; then
-    java -classpath $CLASSPATH $MAINCLASS $1
+if [ ! -z "$1" ] && [ ! -z "$2" ] ; then
+    java -classpath $CLASSPATH $MAINCLASS $1 $2
+elif [ ! -z "$1" ] && [ -z "$2" ] ; then
+    java -classpath $CLASSPATH $MAINCLASS $1 $CLIENT_HOME/conf/console.properties
 else
-    java -classpath $CLASSPATH $MAINCLASS $CLIENT_HOME/conf/config.xml
+    java -classpath $CLASSPATH $MAINCLASS $CLIENT_HOME/conf/config.xml $CLIENT_HOME/conf/console.properties
 fi

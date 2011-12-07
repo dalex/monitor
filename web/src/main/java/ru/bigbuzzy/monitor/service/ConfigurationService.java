@@ -23,10 +23,9 @@ import java.util.List;
 @Service
 public class ConfigurationService {
 
-    private String fileName;
     private List<Resource> resources;
 
-    public void load(String fileName) {
+    public synchronized void load(String fileName) {
         XMLConfiguration config = new XMLConfiguration();
         try {
             config.load(fileName);
@@ -77,7 +76,7 @@ public class ConfigurationService {
         }
     }
 
-    public List<Resource> getResources() {
+    public synchronized List<Resource> getResources() {
         return resources;
     }
 }

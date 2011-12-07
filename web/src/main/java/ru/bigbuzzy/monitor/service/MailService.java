@@ -6,6 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import ru.bigbuzzy.monitor.service.mail.MailCommand;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -20,7 +21,7 @@ public class MailService {
     private Configuration configuration;
     @Autowired
     private JavaMailSender mailSender;
-    @Autowired
+    @Resource(name = "defaultParams")
     private Map<String, Object> defaultParams;
 
     public void send(MailCommand mailCommand) {

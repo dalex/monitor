@@ -13,23 +13,27 @@
 
     <context:component-scan base-package="ru.bigbuzzy.monitor.service"/>
 
-    <jee:jndi-lookup id="config" jndi-name="java:comp/env/config" expected-type="java.lang.String"/>
+    <jee:jndi-lookup id="config" jndi-name="java:comp/env/monitoring/config" expected-type="java.lang.String"/>
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:application.properties"/>
     </bean>
 
-    <bean id="httpResourceMonitor" class="ru.bigbuzzy.monitor.task.HttpResourceMonitor"/>
+    <bean id="httpResourceMonitor" class="ru.bigbuzzy.monitor.task.HttpResourceMonitor" destroy-method="destroy"/>
     <bean id="configModificationMonitor" class="ru.bigbuzzy.monitor.task.ConfigModificationMonitor"/>
+    <bean id="cleanResourceStatusMonitor" class="ru.bigbuzzy.monitor.task.CleanResourceStatusMonitor">
+        <constructor-arg value="${resource.status.history.expiredMillis}"/>
+    </bean>
 
     <task:scheduler id="bigBuzzyScheduler" pool-size="10"/>
 
     <task:scheduled-tasks scheduler="bigBuzzyScheduler">
-        <task:scheduled ref="configModificationMonitor" method="execute" cron="3/10 * * * * ?"/>
-        <task:scheduled ref="httpResourceMonitor" method="execute" cron="3/10 * * * * ?"/>
+        <task:scheduled ref="configModificationMonitor" method="execute" cron="*/7 * * * * ?"/>
+        <task:scheduled ref="httpResourceMonitor" method="execute" cron="*/10 * * * * ?"/>
+        <task:scheduled ref="cleanResourceStatusMonitor" method="execute" fixed-delay="${resource.status.history.expiredMillis}"/>
     </task:scheduled-tasks>
 
-    <util:map id="defaultParams">
+    <util:map id="defaultParams" key-type="java.lang.String" value-type="java.lang.Object" >
         <entry key="mail.admin" value="${mail.admin}"/>
         <entry key="mail.default.from" value="${mail.default.from}"/>
     </util:map>

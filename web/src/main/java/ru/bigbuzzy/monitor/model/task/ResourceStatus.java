@@ -2,6 +2,8 @@ package ru.bigbuzzy.monitor.model.task;
 
 import ru.bigbuzzy.monitor.model.config.Resource;
 
+import java.util.Date;
+
 /**
  * Created by IntelliJ IDEA.
  * User: volodko
@@ -9,6 +11,7 @@ import ru.bigbuzzy.monitor.model.config.Resource;
  * Time: 18:01
  */
 public class ResourceStatus {
+    private Date createTime;
     private Resource resource;
     private int responseCode;
     private long responseSize;
@@ -16,6 +19,14 @@ public class ResourceStatus {
 
     private boolean statusException;
     private String statusMessage;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public Resource getResource() {
         return resource;
