@@ -25,6 +25,6 @@ public class MailService {
     private Map<String, Object> defaultParams;
 
     public void send(MailCommand mailCommand) {
-//        mailCommand.execute(mailSender, configuration, defaultParams);
+        mailCommand.execute(mailSender, configuration, defaultParams);
     }
 }
