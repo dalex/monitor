@@ -1,7 +1,7 @@
-<#if errorCode = ResponseCode>
+<#if errorCode = 'ResponseCode'>
 Ошибка ответа responseCode ${errorValue}
-<#elseif errorCode = ResponseSize>
+<#elseif errorCode = 'ResponseSize'>
 Ошибка ответа responseSize ${errorValue}
-<#elseif errorCode = ResponseTimeOut>
+<#elseif errorCode = 'ResponseTimeOut'>
 Ошибка ответа responseTimeOut ${errorValue}
 </#if>
