@@ -44,7 +44,8 @@ public class ConfigurationService {
             accept.setResponseCode(config.getInt("httpAccept.responseCode", -1));
             Validate.isTrue(accept.getResponseCode() != -1, "Http response code definition is undefined. Check configuration file");
             accept.setResponseSize(config.getLong("httpAccept.responseSize", -1));
-            accept.setResponseTimeOut(config.getLong("httpAccept.responseTimeOut", -1));
+            accept.setConnectionTimeout(config.getInt("httpAccept.connectionTimeoutMillis", -1));
+            accept.setSocketTimeout(config.getInt("httpAccept.socketTimeoutMillis", -1));
 
             for (int i = 0; i <= count; ++i) {
                 Resource resource = new Resource();

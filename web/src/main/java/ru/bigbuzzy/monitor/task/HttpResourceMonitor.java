@@ -10,6 +10,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ public class HttpResourceMonitor {
 
         List<ResourceStatus> resourceStatuses = new ArrayList<ResourceStatus>();
 
-        if(CollectionUtils.isEmpty(configurationService.getResources())) {
+        if (CollectionUtils.isEmpty(configurationService.getResources())) {
             return;
         }
         logger.trace("Resource size = {}", configurationService.getResources().size());
@@ -65,8 +67,14 @@ public class HttpResourceMonitor {
             resourceStatus.setResource(resource);
 
             DefaultHttpClient httpClient = new DefaultHttpClient(clientConnManager);
+
             try {
                 Accept accept = resource.getAccept();
+
+                HttpParams params = httpClient.getParams();
+                HttpConnectionParams.setConnectionTimeout(params, accept.getConnectionTimeout());
+                HttpConnectionParams.setSoTimeout(params, accept.getSocketTimeout());
+
                 Url url = resource.getUrl();
 
                 if (StringUtils.isNotBlank(url.getLogin())) {
@@ -85,17 +93,17 @@ public class HttpResourceMonitor {
                 watch.stop();
                 logger.trace("Watch time: {}", watch.toString());
 
-                if(watch.getTotalTimeMillis() > accept.getResponseTimeOut()) {
+                if (watch.getTotalTimeMillis() > accept.getConnectionTimeout()) {
                     mailService.send(new MailErrorCommand(resource,
                             MailErrorCommand.ErrorCode.ResponseTimeOut,
                             String.valueOf(watch.getTotalTimeMillis())));
                 }
                 resourceStatus.setResponseTimeOut(watch.getTotalTimeMillis());
 
-                if(response.getStatusLine() != null) {
+                if (response.getStatusLine() != null) {
                     int statusCode = response.getStatusLine().getStatusCode();
                     logger.trace("Response status code: {}", statusCode);
-                    if(accept.getResponseCode() != -1 && statusCode != accept.getResponseCode()) {
+                    if (accept.getResponseCode() != -1 && statusCode != accept.getResponseCode()) {
                         logger.error("Accept error by statusCode {} not equal {}", accept.getResponseCode(), statusCode);
                         mailService.send(new MailErrorCommand(resource,
                                 MailErrorCommand.ErrorCode.ResponseCode,
@@ -105,12 +113,12 @@ public class HttpResourceMonitor {
                 }
 
                 HttpEntity entity = response.getEntity();
-                if(entity != null) {
+                if (entity != null) {
                     String responseBody = EntityUtils.toString(entity);
 //                    logger.trace("---------------- Response body start ------------------------");
 //                    logger.trace(responseBody);
 //                    logger.trace("---------------- Response body end --------------------------");
-                    if(responseBody.length() <= accept.getResponseSize()) {
+                    if (responseBody.length() <= accept.getResponseSize()) {
                         mailService.send(new MailErrorCommand(resource,
                                 MailErrorCommand.ErrorCode.ResponseSize,
                                 String.valueOf(responseBody.length())));
@@ -129,7 +137,7 @@ public class HttpResourceMonitor {
     }
 
     public void destroy() {
-        if(clientConnManager != null) {
+        if (clientConnManager != null) {
             clientConnManager.shutdown();
         }
     }

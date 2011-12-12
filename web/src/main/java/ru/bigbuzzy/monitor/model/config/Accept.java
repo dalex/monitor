@@ -9,7 +9,9 @@ package ru.bigbuzzy.monitor.model.config;
 public class Accept {
     private int responseCode;
     private long responseSize;
-    private long responseTimeOut;
+    private int connectionTimeout;
+    private int socketTimeout;
+
 
     public int getResponseCode() {
         return responseCode;
@@ -27,11 +29,19 @@ public class Accept {
         this.responseSize = responseSize;
     }
 
-    public long getResponseTimeOut() {
-        return responseTimeOut;
+    public int getConnectionTimeout() {
+        return connectionTimeout;
     }
 
-    public void setResponseTimeOut(long responseTimeOut) {
-        this.responseTimeOut = responseTimeOut;
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
     }
 }

@@ -4,7 +4,8 @@
     <httpAccept>
         <responseCode>200</responseCode>
         <responseSize>200</responseSize>
-        <responseTimeOut>1000</responseTimeOut>
+        <connectionTimeoutMillis>200</connectionTimeoutMillis>
+        <socketTimeoutMillis>200</socketTimeoutMillis>
     </httpAccept>
 
     <resources>
