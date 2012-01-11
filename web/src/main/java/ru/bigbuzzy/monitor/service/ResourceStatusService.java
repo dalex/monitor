@@ -1,13 +1,15 @@
 package ru.bigbuzzy.monitor.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.bigbuzzy.monitor.dao.ResourceStatusDao;
 import ru.bigbuzzy.monitor.model.task.ResourceStatus;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 06.12.11
  * Time: 21:21
@@ -15,17 +17,21 @@ import java.util.List;
 @Service
 public class ResourceStatusService {
 
-    private List<ResourceStatus> resourceStatuses = new LinkedList<ResourceStatus>();
+    @Autowired
+    private ResourceStatusDao resourceStatusDao;
 
-    public synchronized void save(List<ResourceStatus> resourceStatuses) {
-        this.resourceStatuses.addAll(resourceStatuses);
+    @Transactional
+    public void save(List<ResourceStatus> resourceStatuses) {
+        resourceStatusDao.save(resourceStatuses);
     }
 
-    public synchronized void delete(List<ResourceStatus> resourceStatuses) {
-        this.resourceStatuses.removeAll(resourceStatuses);
+    @Transactional
+    public void delete(List<ResourceStatus> resourceStatuses) {
+        resourceStatusDao.delete(resourceStatuses);
     }
 
-    public synchronized List<ResourceStatus> getResourceStatuses() {
-        return resourceStatuses;
+    @Transactional(readOnly = true)
+    public List<ResourceStatus> getResourceStatuses() {
+        return resourceStatusDao.findAll();
     }
 }

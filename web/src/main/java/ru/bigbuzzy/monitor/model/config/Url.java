@@ -1,7 +1,8 @@
 package ru.bigbuzzy.monitor.model.config;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 05.12.11
  * Time: 15:58
@@ -61,5 +62,10 @@ public class Url {
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this).toString();
     }
 }

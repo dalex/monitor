@@ -1,5 +1,6 @@
 package ru.bigbuzzy.monitor.model.task;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import ru.bigbuzzy.monitor.model.config.Resource;
 
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
  * Time: 18:01
  */
 public class ResourceStatus {
+    private Long id;
     private Date createTime;
     private Resource resource;
     private int responseCode;
@@ -19,6 +21,14 @@ public class ResourceStatus {
 
     private boolean statusException;
     private String statusMessage;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Date getCreateTime() {
         return createTime;
@@ -74,5 +84,10 @@ public class ResourceStatus {
 
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this).toString();
     }
 }

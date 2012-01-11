@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 05.12.11
  * Time: 19:37
@@ -25,6 +24,6 @@ public class MailService {
     private Map<String, Object> defaultParams;
 
     public void send(MailCommand mailCommand) {
-        mailCommand.execute(mailSender, configuration, defaultParams);
+//        mailCommand.execute(mailSender, configuration, defaultParams);
     }
 }

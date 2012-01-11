@@ -11,13 +11,25 @@
                 http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
                 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <context:component-scan base-package="ru.bigbuzzy.monitor.service"/>
-
     <jee:jndi-lookup id="config" jndi-name="java:comp/env/monitoring/config" expected-type="java.lang.String"/>
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:application.properties"/>
     </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <context:component-scan base-package="ru.bigbuzzy.monitor.dao"/>
+    <context:component-scan base-package="ru.bigbuzzy.monitor.service"/>
 
     <bean id="httpResourceMonitor" class="ru.bigbuzzy.monitor.task.HttpResourceMonitor" destroy-method="destroy"/>
     <bean id="configModificationMonitor" class="ru.bigbuzzy.monitor.task.ConfigModificationMonitor"/>
@@ -30,10 +42,11 @@
     <task:scheduled-tasks scheduler="bigBuzzyScheduler">
         <task:scheduled ref="configModificationMonitor" method="execute" cron="*/7 * * * * ?"/>
         <task:scheduled ref="httpResourceMonitor" method="execute" cron="*/10 * * * * ?"/>
-        <task:scheduled ref="cleanResourceStatusMonitor" method="execute" fixed-delay="${resource.status.history.expiredMillis}"/>
+        <task:scheduled ref="cleanResourceStatusMonitor" method="execute"
+                        fixed-delay="${resource.status.history.expiredMillis}"/>
     </task:scheduled-tasks>
 
-    <util:map id="defaultParams" key-type="java.lang.String" value-type="java.lang.Object" >
+    <util:map id="defaultParams" key-type="java.lang.String" value-type="java.lang.Object">
         <entry key="mail.admin" value="${mail.admin}"/>
         <entry key="mail.default.from" value="${mail.default.from}"/>
     </util:map>

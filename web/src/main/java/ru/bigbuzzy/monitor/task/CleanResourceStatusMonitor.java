@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 07.12.11
  * Time: 16:59
@@ -31,13 +30,11 @@ public class CleanResourceStatusMonitor {
         Date expiredTime = currentDateTime.toDate();
 
         List<ResourceStatus> removeResourceStatuses = new ArrayList<ResourceStatus>();
-        for(ResourceStatus resourceStatus : resourceStatusService.getResourceStatuses()) {
-            if(resourceStatus.getCreateTime().before(expiredTime)) {
+        for (ResourceStatus resourceStatus : resourceStatusService.getResourceStatuses()) {
+            if (resourceStatus.getCreateTime().before(expiredTime)) {
                 removeResourceStatuses.add(resourceStatus);
             }
         }
         resourceStatusService.delete(removeResourceStatuses);
     }
-
-
 }

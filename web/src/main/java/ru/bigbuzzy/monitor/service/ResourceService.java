@@ -3,7 +3,10 @@ package ru.bigbuzzy.monitor.service;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.bigbuzzy.monitor.dao.ResourceDao;
 import ru.bigbuzzy.monitor.model.config.Accept;
 import ru.bigbuzzy.monitor.model.config.Resource;
 import ru.bigbuzzy.monitor.model.config.Url;
@@ -11,33 +14,44 @@ import ru.bigbuzzy.monitor.model.config.Url;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 05.12.11
  * Time: 16:05
  */
 @Service
-public class ConfigurationService {
+public class ResourceService {
 
-    private List<Resource> resources;
+    @Autowired
+    private ResourceDao resourceDao;
+
+    private List<Resource> resources = Collections.emptyList();
 
     public synchronized void load(String fileName) {
-        XMLConfiguration config = new XMLConfiguration();
         try {
+            XMLConfiguration config = new XMLConfiguration();
             config.load(fileName);
             config.setThrowExceptionOnMissing(false);
-            initResources(config);
+
+            List<Resource> resources = getResources(config);
+            save(resources);
+            this.resources = resources;
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void initResources(XMLConfiguration config) {
-        resources = new ArrayList<Resource>();
+    @Transactional
+    public void save(List<Resource> resources) {
+        resourceDao.save(resources);
+    }
+
+    private List<Resource> getResources(XMLConfiguration config) {
+        List<Resource> resources = new ArrayList<Resource>();
         int count = config.getMaxIndex("resources.resource");
         if (count >= 0) {
             Accept accept = new Accept();
@@ -75,9 +89,10 @@ public class ConfigurationService {
                 resources.add(resource);
             }
         }
+        return resources;
     }
 
-    public synchronized List<Resource> getResources() {
+    public List<Resource> getResources() {
         return resources;
     }
 }

@@ -1,5 +1,7 @@
 package ru.bigbuzzy.monitor.model.config;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 /**
  * Created by IntelliJ IDEA.
  * User: volodko
@@ -43,5 +45,10 @@ public class Accept {
 
     public void setSocketTimeout(int socketTimeout) {
         this.socketTimeout = socketTimeout;
+    }
+
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this).toString();
     }
 }

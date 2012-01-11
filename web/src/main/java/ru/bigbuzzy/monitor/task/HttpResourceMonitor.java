@@ -16,23 +16,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
+import ru.bigbuzzy.monitor.model.config.Accept;
+import ru.bigbuzzy.monitor.model.config.Resource;
+import ru.bigbuzzy.monitor.model.config.Url;
 import ru.bigbuzzy.monitor.model.task.ResourceStatus;
-import ru.bigbuzzy.monitor.service.ConfigurationService;
+import ru.bigbuzzy.monitor.service.ResourceService;
 import ru.bigbuzzy.monitor.service.ResourceStatusService;
 import ru.bigbuzzy.monitor.service.mail.MailErrorCommand;
 import ru.bigbuzzy.monitor.service.mail.MailExceptionCommand;
 import ru.bigbuzzy.monitor.service.MailService;
-import ru.bigbuzzy.monitor.model.config.Accept;
-import ru.bigbuzzy.monitor.model.config.Resource;
-import ru.bigbuzzy.monitor.model.config.Url;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 05.12.11
  * Time: 14:37
@@ -42,7 +40,7 @@ public class HttpResourceMonitor {
     @Autowired
     private MailService mailService;
     @Autowired
-    private ConfigurationService configurationService;
+    private ResourceService resourceService;
     @Autowired
     private ResourceStatusService resourceStatusService;
 
@@ -55,12 +53,12 @@ public class HttpResourceMonitor {
 
         List<ResourceStatus> resourceStatuses = new ArrayList<ResourceStatus>();
 
-        if (CollectionUtils.isEmpty(configurationService.getResources())) {
+        if (CollectionUtils.isEmpty(resourceService.getResources())) {
             return;
         }
-        logger.trace("Resource size = {}", configurationService.getResources().size());
+        logger.trace("Resource size = {}", resourceService.getResources().size());
 
-        for (Resource resource : configurationService.getResources()) {
+        for (Resource resource : resourceService.getResources()) {
             ResourceStatus resourceStatus = new ResourceStatus();
             resourceStatus.setCreateTime(new Date());
             resourceStatus.setResource(resource);

@@ -1,5 +1,7 @@
 package ru.bigbuzzy.monitor.model.config;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 /**
  * Created by IntelliJ IDEA.
  * User: volodko
@@ -7,9 +9,18 @@ package ru.bigbuzzy.monitor.model.config;
  * Time: 15:57
  */
 public class Resource {
+    private long id;
     private Url url;
     private String email;
     private Accept accept;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public Url getUrl() {
         return url;
@@ -33,5 +44,10 @@ public class Resource {
 
     public void setAccept(Accept accept) {
         this.accept = accept;
+    }
+
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this).toString();
     }
 }
