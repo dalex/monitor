@@ -23,4 +23,15 @@
         <servlet-name>monitorStatusServlet</servlet-name>
         <url-pattern>/monitor</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>timeLineChartStatusServlet</servlet-name>
+        <servlet-class>ru.bigbuzzy.monitor.web.TimeLineChartMonitorStatusServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>timeLineChartStatusServlet</servlet-name>
+        <url-pattern>/timelinechart</url-pattern>
+    </servlet-mapping>
+
 </web-app>

@@ -16,8 +16,8 @@ public class MailErrorCommand extends MailCommand {
         ResponseTimeOut;
     };
 
-    private static final String TEMPLATE_BODY_NAME = "mailErrorBody.flt";
-    private static final String TEMPLATE_SUBJECT_NAME = "mailErrorSubject.flt";
+    private static final String TEMPLATE_BODY_NAME = "mailErrorBody.ftl";
+    private static final String TEMPLATE_SUBJECT_NAME = "mailErrorSubject.ftl";
 
     public MailErrorCommand(Resource resource, ErrorCode errorCode, String errorValue) {
         params.put(TO_KEY, resource.getEmail());

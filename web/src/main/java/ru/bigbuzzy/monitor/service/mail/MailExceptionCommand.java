@@ -12,8 +12,8 @@ import java.io.StringWriter;
  * Time: 12:47
  */
 public class MailExceptionCommand extends MailCommand {
-    private static final String TEMPLATE_BODY_NAME = "mailExceptionBody.flt";
-    private static final String TEMPLATE_SUBJECT_NAME = "mailExceptionSubject.flt";
+    private static final String TEMPLATE_BODY_NAME = "mailExceptionBody.ftl";
+    private static final String TEMPLATE_SUBJECT_NAME = "mailExceptionSubject.ftl";
 
     public MailExceptionCommand(Resource resource, Exception exception) {
         params.put(TO_KEY, resource.getEmail());

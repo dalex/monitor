@@ -2,6 +2,7 @@ package ru.bigbuzzy.monitor.web;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -22,15 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
- * Date: 06.12.11
- * Time: 16:03
+ * Date: 11.01.12
+ * Time: 16:06
  */
-public class MonitorStatusServlet extends HttpServlet {
-    private static final Logger logger = LoggerFactory.getLogger(MonitorStatusServlet.class);
+public class TimeLineChartMonitorStatusServlet extends HttpServlet {
+    private static final Logger logger = LoggerFactory.getLogger(TimeLineChartMonitorStatusServlet.class);
 
-    private static final String PAGE_TEMPLATE = "monitorServlet.ftl";
+    private static final String PAGE_TEMPLATE = "timeLineChartMonitorServlet.ftl";
 
     private Configuration configuration;
     private ResourceStatusService resourceStatusService;
@@ -63,6 +63,12 @@ public class MonitorStatusServlet extends HttpServlet {
                 resourceStatuses.add(resourceStatus);
             }
             params.put("resourceStatusMap", resourceStatusMap);
+
+            String autorefresh = request.getParameter("autorefresh");
+            if(StringUtils.isNotEmpty(autorefresh)) {
+                params.put("autorefresh", autorefresh);
+            }
+
             response.getWriter().println(FreeMarkerTemplateUtils.processTemplateIntoString(
                     configuration.getTemplate(PAGE_TEMPLATE), params));
             response.setStatus(HttpServletResponse.SC_OK);
