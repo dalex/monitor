@@ -46,8 +46,8 @@ public abstract class MailCommand {
             public void prepare(MimeMessage mimeMessage) throws Exception {
                 mimeMessage.addHeader("Content-Transfer-Encoding", "quoted-printable");
 
-                MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-                
+                MimeMessageHelper message = new MimeMessageHelper(mimeMessage, !CollectionUtils.isEmpty(attachments));
+
                 String to = getParam(TO_KEY);
                 message.setTo(to);
 

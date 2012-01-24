@@ -1,5 +1,7 @@
 package ru.bigbuzzy.monitor.model.config;
 
+import java.util.Set;
+
 /**
  * Created by IntelliJ IDEA.
  * User: volodko
@@ -8,7 +10,7 @@ package ru.bigbuzzy.monitor.model.config;
  */
 public class Resource {
     private Url url;
-    private String email;
+    private Set<Subscriber> subscribers;
     private Accept accept;
 
     public Url getUrl() {
@@ -19,12 +21,12 @@ public class Resource {
         this.url = url;
     }
 
-    public String getEmail() {
-        return email;
+    public Set<Subscriber> getSubscribers() {
+        return subscribers;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setSubscribers(Set<Subscriber> subscribers) {
+        this.subscribers = subscribers;
     }
 
     public Accept getAccept() {
@@ -40,6 +42,7 @@ public class Resource {
         return getUrl() == null ? System.identityHashCode(this) : getUrl().hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (getUrl() == null) return false;

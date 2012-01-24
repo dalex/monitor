@@ -1,13 +1,12 @@
 package ru.bigbuzzy.monitor.task;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.bigbuzzy.monitor.model.config.Accept;
 import ru.bigbuzzy.monitor.model.config.Resource;
+import ru.bigbuzzy.monitor.model.config.Subscriber;
 import ru.bigbuzzy.monitor.model.task.AssocResourceStatus;
 import ru.bigbuzzy.monitor.model.task.Status;
 import ru.bigbuzzy.monitor.service.MailService;
@@ -40,48 +39,44 @@ public class MailNotifyMonitor {
 
     public void execute() {
         if (logger.isTraceEnabled()) {
-            logger.trace("Method execute has started");
+            logger.trace("Method execute has started>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         }
 
         Date activeDate = new DateTime().minusMillis(searchMillis).toDate();
 
-        // find resources with errors by history for searchMillis
+        // find subscribers with errors resources by history for searchMillis
+        Set<Subscriber> subscribers = new HashSet<Subscriber>();
         Collection<AssocResourceStatus> assocResourceStatuses = resourceStatusService.getAssocResourceStatuses();
-        Set<Resource> errors = new HashSet<Resource>();
         for (AssocResourceStatus assocResourceStatus : assocResourceStatuses) {
             Accept accept = assocResourceStatus.getResource().getAccept();
             for (Status status : assocResourceStatus.getStatuses()) {
                 if (status.getCreateTime().after(activeDate)) {
                     if (status.isExceptionable()) {
-                        errors.add(assocResourceStatus.getResource());
+                        subscribers.addAll(assocResourceStatus.getResource().getSubscribers());
                     } else if (status.getResponseTimeOut() > accept.getConnectionTimeout()) {
-                        errors.add(assocResourceStatus.getResource());
+                        subscribers.addAll(assocResourceStatus.getResource().getSubscribers());
                     } else if (accept.getResponseCode() != -1 && status.getResponseCode() != accept.getResponseCode()) {
-                        errors.add(assocResourceStatus.getResource());
+                        subscribers.addAll(assocResourceStatus.getResource().getSubscribers());
                     } else if (status.getResponseSize() <= accept.getResponseSize()) {
-                        errors.add(assocResourceStatus.getResource());
+                        subscribers.addAll(assocResourceStatus.getResource().getSubscribers());
                     }
                 } else {
                     break;
                 }
+                logger.trace("Method execute has started>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", subscribers);
             }
         }
 
-        if (errors.isEmpty()) {
+        logger.trace("Method execute has started>>1111 {}", subscribers);
+        if (subscribers.isEmpty()) {
             return;
         }
 
-        // group resources by email
-        Multimap<String, Resource> mapEmailResource = LinkedListMultimap.create();
-        for (Resource resource : errors) {
-            mapEmailResource.put(resource.getEmail(), resource);
-        }
-
-        for(String email : mapEmailResource.keys()) {
-            MailStatusCommand mailStatusCommand = new MailStatusCommand(email);
+        for(Subscriber subscriber : subscribers) {
+            MailStatusCommand mailStatusCommand = new MailStatusCommand(subscriber.getEmail());
             for(AssocResourceStatus assocResourceStatus : assocResourceStatuses) {
-                if(email.equals(assocResourceStatus.getResource().getEmail())) {
-                    Resource resource = assocResourceStatus.getResource();
+                Resource resource = assocResourceStatus.getResource();
+                if(resource.getSubscribers().contains(subscriber)) {
                     Accept accept = assocResourceStatus.getResource().getAccept();
                     for (Status status : assocResourceStatus.getStatuses()) {
                         if (status.getCreateTime().after(activeDate)) {

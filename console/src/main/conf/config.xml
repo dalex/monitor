@@ -13,15 +13,27 @@
             <url login="tomcat" password="123">
                 http://localhost:8080/manager/html
             </url>
-            <email>aav@bigbyzzy.com</email>
+            <subscribers>
+                <subscriber>
+                    <email>aav@bigbyzzy.com</email>
+                </subscriber>
+            </subscribers>
         </resource>
         <resource>
             <url>http://google.com</url>
-            <email>aav@bigbyzzy.com</email>
+            <subscribers>
+                <subscriber>
+                    <email>aav@bigbyzzy.com</email>
+                </subscriber>
+            </subscribers>
         </resource>
         <resource>
             <url>http://bigbuzzy.ru</url>
-            <email>aav@bigbyzzy.com</email>
+            <subscribers>
+                <subscriber>
+                    <email>aav@bigbyzzy.com</email>
+                </subscriber>
+            </subscribers>
         </resource>
     </resources>
 

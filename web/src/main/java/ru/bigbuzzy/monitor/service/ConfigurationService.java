@@ -3,15 +3,21 @@ package ru.bigbuzzy.monitor.service;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.bigbuzzy.monitor.model.config.Accept;
 import ru.bigbuzzy.monitor.model.config.Resource;
+import ru.bigbuzzy.monitor.model.config.Subscriber;
 import ru.bigbuzzy.monitor.model.config.Url;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User: volodko
@@ -20,8 +26,9 @@ import java.util.List;
  */
 @Service
 public class ConfigurationService {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
 
-    private List<Resource> resources;
+    private List<Resource> resources = Collections.emptyList();
 
     public synchronized void load(String fileName) {
         XMLConfiguration config = new XMLConfiguration();
@@ -37,6 +44,7 @@ public class ConfigurationService {
     private void initResources(XMLConfiguration config) {
         resources = new ArrayList<Resource>();
         int count = config.getMaxIndex("resources.resource");
+        logger.trace("Load {} resources", count + 1);
         if (count >= 0) {
             Accept accept = new Accept();
             accept.setResponseCode(config.getInt("httpAccept.responseCode", -1));
@@ -66,8 +74,18 @@ public class ConfigurationService {
                 }
                 resource.setUrl(url);
 
-                resource.setEmail(config.getString(String.format("resources.resource(%d).email", i)));
-                Validate.notEmpty(resource.getEmail(), "Email in resource definition is undefined. Check configuration file");
+                int countSubscribers = config.getMaxIndex(String.format("resources.resource(%d).subscribers.subscriber", i));
+                Validate.isTrue(countSubscribers >= 0, "Subscribers are undefined. Check configuration file");
+
+                Set<Subscriber> subscribers = new LinkedHashSet<Subscriber>();
+                for (int j = 0; j <= countSubscribers; j++) {
+                    Subscriber subscriber = new Subscriber();
+                    subscriber.setName(config.getString(String.format("resources.resource(%d).subscribers.subscriber(%d).name", i, j)));
+                    subscriber.setEmail(config.getString(String.format("resources.resource(%d).subscribers.subscriber(%d).email", i, j)));
+                    Validate.notEmpty(subscriber.getEmail(), "Email in subscriber is undefined. Check configuration file");
+                    subscribers.add(subscriber);
+                }
+                resource.setSubscribers(subscribers);
 
                 resource.setAccept(accept);
                 resources.add(resource);

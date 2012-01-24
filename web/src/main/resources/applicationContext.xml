@@ -32,9 +32,9 @@
 
     <task:scheduled-tasks scheduler="bigBuzzyScheduler">
         <task:scheduled ref="configModificationMonitor" method="execute" cron="5 * * * * ?"/>
-        <task:scheduled ref="httpResourceMonitor" method="execute" cron="*/10 * * * * ?"/>
-        <task:scheduled ref="cleanResourceStatusMonitor" method="execute" fixed-delay="${resource.status.history.active.millis}"/>
-        <task:scheduled ref="mailNotifyMonitor" method="execute" cron="1 * * * * ?"/>
+        <task:scheduled ref="httpResourceMonitor" method="execute" cron="*/30 * * * * ?"/>
+        <task:scheduled ref="cleanResourceStatusMonitor" method="execute" fixed-rate="${resource.status.history.active.millis}"/>
+        <task:scheduled ref="mailNotifyMonitor" method="execute" cron="5 * * * * ?"/>
     </task:scheduled-tasks>
 
     <util:map id="defaultParams" key-type="java.lang.String" value-type="java.lang.Object" >
