@@ -34,4 +34,16 @@ public class Resource {
     public void setAccept(Accept accept) {
         this.accept = accept;
     }
+
+    @Override
+    public int hashCode() {
+        return getUrl() == null ? System.identityHashCode(this) : getUrl().hashCode();
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (getUrl() == null) return false;
+        if (!(o instanceof Resource)) return false;
+        return getUrl().equals(((Resource) o).getUrl());
+    }
 }

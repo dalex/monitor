@@ -5,7 +5,7 @@
         <responseCode>200</responseCode>
         <responseSize>200</responseSize>
         <connectionTimeoutMillis>200</connectionTimeoutMillis>
-        <socketTimeoutMillis>200</socketTimeoutMillis>
+        <socketTimeoutMillis>3000</socketTimeoutMillis>
     </httpAccept>
 
     <resources>

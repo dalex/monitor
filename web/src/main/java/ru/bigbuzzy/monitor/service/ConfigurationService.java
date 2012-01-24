@@ -13,9 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 05.12.11
  * Time: 16:05

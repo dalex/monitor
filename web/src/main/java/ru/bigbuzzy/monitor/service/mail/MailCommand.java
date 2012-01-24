@@ -3,13 +3,21 @@ package ru.bigbuzzy.monitor.service.mail;
 import freemarker.template.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -31,6 +39,7 @@ public abstract class MailCommand {
     private static final String DEFAULT_FROM_KEY = "mail.default.from";
 
     protected Map<String, Object> params = new HashMap<String, Object>();
+    protected Map<String, String> attachments = new LinkedHashMap<String, String>();
 
     public void execute(final JavaMailSender mailSender, final Configuration configuration, final Map<String, Object> defaultParams) {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
@@ -38,30 +47,44 @@ public abstract class MailCommand {
                 mimeMessage.addHeader("Content-Transfer-Encoding", "quoted-printable");
 
                 MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-                message.setTo(getParam(TO_KEY));
+                
+                String to = getParam(TO_KEY);
+                message.setTo(to);
 
                 String from = getParam(FROM_KEY);
-                if (from == null) {
+                if (!StringUtils.hasText(from)) {
                     from = (String) defaultParams.get(DEFAULT_FROM_KEY);
                 }
                 message.setFrom(from);
 
                 String subject = getParam(SUBJECT_KEY);
-                if (subject == null) {
+                if (!StringUtils.hasText(subject)) {
                     subject = FreeMarkerTemplateUtils.processTemplateIntoString(
                             configuration.getTemplate(getParam(TEMPLATE_SUBJECT_KEY)), params);
                 }
                 message.setSubject(subject);
 
                 String text = getParam(BODY_KEY);
-                if (text == null) {
+                if (!StringUtils.hasText(text)) {
                     text = FreeMarkerTemplateUtils.processTemplateIntoString(
                             configuration.getTemplate(getParam(TEMPLATE_BODY_KEY)), params);
                 }
                 message.setText(text, hasHtml(text));
+
+                Assert.hasText(to);
+                Assert.hasText(from);
+                Assert.hasText(subject);
+                Assert.hasText(text);
+
                 if (logger.isTraceEnabled()) {
                     logger.trace("Send mail from:{}, to:{}, subject:{}, text:{}",
-                            new Object[]{getParam(FROM_KEY), getParam(TO_KEY), subject, text});
+                            new Object[]{from, to, subject, text});
+                }
+
+                if (!CollectionUtils.isEmpty(attachments)) {
+                    for (Map.Entry<String, String> attachment : attachments.entrySet()) {
+                        message.addAttachment(attachment.getKey(), new StringInputStreamSource(attachment.getValue()));
+                    }
                 }
             }
         };
@@ -82,5 +105,18 @@ public abstract class MailCommand {
         }
         String prefix = text.substring(0, 6);
         return prefix.equalsIgnoreCase("<html>");
+    }
+
+    protected class StringInputStreamSource implements InputStreamSource {
+        private String string;
+
+        public StringInputStreamSource(String string) {
+            this.string = string;
+        }
+
+        public InputStream getInputStream() throws IOException {
+            return new ByteArrayInputStream(string.getBytes());
+        }
+
     }
 }

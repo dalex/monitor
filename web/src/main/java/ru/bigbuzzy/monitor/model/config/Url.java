@@ -62,4 +62,16 @@ public class Url {
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
+
+    @Override
+    public int hashCode() {
+        return path == null ? System.identityHashCode(this) : path.hashCode();
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (path == null) return false;
+        if (!(o instanceof Url)) return false;
+        return path.equals(((Url) o).path);
+    }
 }

@@ -22,15 +22,19 @@
     <bean id="httpResourceMonitor" class="ru.bigbuzzy.monitor.task.HttpResourceMonitor" destroy-method="destroy"/>
     <bean id="configModificationMonitor" class="ru.bigbuzzy.monitor.task.ConfigModificationMonitor"/>
     <bean id="cleanResourceStatusMonitor" class="ru.bigbuzzy.monitor.task.CleanResourceStatusMonitor">
-        <constructor-arg value="${resource.status.history.expiredMillis}"/>
+        <constructor-arg value="${resource.status.history.active.millis}"/>
+    </bean>
+    <bean id="mailNotifyMonitor" class="ru.bigbuzzy.monitor.task.MailNotifyMonitor">
+        <constructor-arg value="${resource.status.mail.notify.search.millis}"/>
     </bean>
 
     <task:scheduler id="bigBuzzyScheduler" pool-size="10"/>
 
     <task:scheduled-tasks scheduler="bigBuzzyScheduler">
-        <task:scheduled ref="configModificationMonitor" method="execute" cron="*/7 * * * * ?"/>
+        <task:scheduled ref="configModificationMonitor" method="execute" cron="5 * * * * ?"/>
         <task:scheduled ref="httpResourceMonitor" method="execute" cron="*/10 * * * * ?"/>
-        <task:scheduled ref="cleanResourceStatusMonitor" method="execute" fixed-delay="${resource.status.history.expiredMillis}"/>
+        <task:scheduled ref="cleanResourceStatusMonitor" method="execute" fixed-delay="${resource.status.history.active.millis}"/>
+        <task:scheduled ref="mailNotifyMonitor" method="execute" cron="1 * * * * ?"/>
     </task:scheduled-tasks>
 
     <util:map id="defaultParams" key-type="java.lang.String" value-type="java.lang.Object" >

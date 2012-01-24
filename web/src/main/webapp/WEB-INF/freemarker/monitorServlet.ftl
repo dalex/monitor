@@ -7,12 +7,12 @@
 <body>
 <h2>Статистика мониторинга ресурсов</h2>
 
-<#if (resourceStatusMap?size == 0)>
+<#if (assocResourceStatuses?size == 0)>
 Статистика отсутствует
 </#if>
 
-<#list resourceStatusMap?keys as urlKey>
-<h3>Ресурс: ${urlKey} </h3>
+<#list assocResourceStatuses as assocResourceStatus>
+<h3>Ресурс: ${assocResourceStatus.resource.url.path} </h3>
 <table border="1" cellpadding="0" cellspacing="0">
     <thead>
     <tr>
@@ -24,31 +24,31 @@
     </tr>
     </thead>
     <#assign responseTimeOut=-1>
-    <#list resourceStatusMap[urlKey] as resourceStatus>
+    <#list assocResourceStatus.statuses as status>
         <tr>
-            <#if resourceStatus.statusException>
-                <td class="errorField">${resourceStatus.createTime?string("dd.MM.yyyy HH:mm:ss SSS")}</td>
+            <#if status.exceptionable>
+                <td class="errorField">${status.createTime?string("dd.MM.yyyy HH:mm:ss SSS")}</td>
                 <td class="errorField">-</td>
                 <td class="errorField">-</td>
                 <td class="errorField">-</td>
-                <td class="errorField">${resourceStatus.statusMessage}</td>
+                <td class="errorField">${status.exceptionShortMessage}</td>
                 <#else>
-                    <td>${resourceStatus.createTime?string("dd.MM.yyyy HH:mm:ss SSS")}</td>
-                    <td>${resourceStatus.responseCode}</td>
+                    <td>${status.createTime?string("dd.MM.yyyy HH:mm:ss SSS")}</td>
+                    <td>${status.responseCode}</td>
                     <td>
-                    ${resourceStatus.responseTimeOut}
+                    ${status.responseTimeOut}
                         <#if responseTimeOut == -1>
-                            <#elseif (resourceStatus.responseTimeOut > responseTimeOut)>
+                            <#elseif (status.responseTimeOut > responseTimeOut)>
                                 <span style="color: red;">&uarr;</span>
-                            <#elseif (resourceStatus.responseTimeOut == responseTimeOut)>
+                            <#elseif (status.responseTimeOut == responseTimeOut)>
                                 <span>=</span>
                             <#else>
                                 <span style="color: green;">&darr;</span>
                         </#if>
                     </td>
-                    <td>${resourceStatus.responseSize}</td>
+                    <td>${status.responseSize}</td>
                     <td>-</td>
-                    <#assign responseTimeOut=resourceStatus.responseTimeOut>
+                    <#assign responseTimeOut=status.responseTimeOut>
             </#if>
         </tr>
     </#list>

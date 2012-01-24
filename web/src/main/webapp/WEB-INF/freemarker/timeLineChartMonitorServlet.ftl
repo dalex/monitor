@@ -10,26 +10,27 @@
 
     <script type="text/javascript">
         function drawVisualization() {
-        <#list resourceStatusMap?keys as urlKey>
+        <#list assocResourceStatuses as assocResourceStatus>
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', 'Период');
             data.addColumn('number', 'Время ответа, мс');
             data.addColumn('string', 'Title');
             data.addColumn('string', 'Description');
-            data.addRows(${resourceStatusMap[urlKey]?size});
+            data.addRows(${assocResourceStatus.statuses?size});
 
-            <#list resourceStatusMap[urlKey] as resourceStatus>
-                data.setValue(${resourceStatus_index}, 0, new Date(${resourceStatus.createTime?long?c}));
-                data.setValue(${resourceStatus_index}, 1, ${resourceStatus.responseTimeOut?c});
-                <#if resourceStatus.statusException>
-                    data.setValue(${resourceStatus_index}, 2, 'Status exception');
-                    data.setValue(${resourceStatus_index}, 3, '${resourceStatus.statusMessage}');
+            <#list assocResourceStatus.statuses as status>
+                data.setValue(${status_index}, 0, new Date(${status.createTime?long?c}));
+                data.setValue(${status_index}, 1, ${status.responseTimeOut?c});
+                <#if status.exceptionable>
+                    data.setValue(${status_index}, 2, 'Status exception');
+                    data.setValue(${status_index}, 3, '${status.exceptionShortMessage}');
                 </#if>
             </#list>
 
             var annotatedTimeLine = new google.visualization.AnnotatedTimeLine(
-                    document.getElementById('visualization_${urlKey_index}'));
-            annotatedTimeLine.draw(data, {'displayAnnotations':true});
+                    document.getElementById('visualization_${assocResourceStatus_index}'));
+            annotatedTimeLine.draw(data, {displayAnnotations:true, scaleType:'maximized', allowRedraw:true,
+                displayExactValues:true});
         </#list>
         }
         google.setOnLoadCallback(drawVisualization);
@@ -49,13 +50,13 @@
         <label for="autorefresh">Aвтообновление</label>
     </div>
 
-<#if (resourceStatusMap?size == 0)>
+<#if (assocResourceStatuses?size == 0)>
     Данные по мониторингу отсутствуют
 <#else>
-    <#list resourceStatusMap?keys as urlKey>
-        <h3>Ресурс: ${urlKey} </h3>
+    <#list assocResourceStatuses as assocResourceStatus>
+        <h3>Ресурс: ${assocResourceStatus.resource.url.path} </h3>
 
-        <div id="visualization_${urlKey_index}" style="width: 800px; height: 400px;"></div>
+        <div id="visualization_${assocResourceStatus_index}" style="width: 800px; height: 400px;"></div>
     </#list>
 </#if>
 </form>

@@ -1,24 +1,21 @@
 package ru.bigbuzzy.monitor.model.task;
 
-import ru.bigbuzzy.monitor.model.config.Resource;
-
 import java.util.Date;
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 06.12.11
  * Time: 18:01
  */
-public class ResourceStatus {
+public class Status {
     private Date createTime;
-    private Resource resource;
     private int responseCode;
     private long responseSize;
     private long responseTimeOut;
 
-    private boolean statusException;
-    private String statusMessage;
+    private boolean exceptionable;
+    private String exceptionShortMessage;
+    private String exceptionFullMessage;
 
     public Date getCreateTime() {
         return createTime;
@@ -26,14 +23,6 @@ public class ResourceStatus {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     public int getResponseCode() {
@@ -60,19 +49,27 @@ public class ResourceStatus {
         this.responseTimeOut = responseTimeOut;
     }
 
-    public boolean isStatusException() {
-        return statusException;
+    public boolean isExceptionable() {
+        return exceptionable;
     }
 
-    public void setStatusException(boolean statusException) {
-        this.statusException = statusException;
+    public void setExceptionable(boolean exceptionable) {
+        this.exceptionable = exceptionable;
     }
 
-    public String getStatusMessage() {
-        return statusMessage;
+    public String getExceptionShortMessage() {
+        return exceptionShortMessage;
     }
 
-    public void setStatusMessage(String statusMessage) {
-        this.statusMessage = statusMessage;
+    public void setExceptionShortMessage(String exceptionShortMessage) {
+        this.exceptionShortMessage = exceptionShortMessage;
+    }
+
+    public String getExceptionFullMessage() {
+        return exceptionFullMessage;
+    }
+
+    public void setExceptionFullMessage(String exceptionFullMessage) {
+        this.exceptionFullMessage = exceptionFullMessage;
     }
 }

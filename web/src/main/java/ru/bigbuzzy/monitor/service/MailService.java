@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
  * User: volodko
  * Date: 05.12.11
  * Time: 19:37
